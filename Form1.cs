@@ -30,7 +30,7 @@ namespace WindowsFormsApp1
         {
             btn_start.Enabled = false;
             btn_start.Hide();
-            string url = "http://25.64.193.152/update/update.zip"; //ที่อยู่ของไฟล์
+            string url = "http://127.0.0.1/update/update.zip"; //ที่อยู่ของไฟล์
             string localPath = "update.zip"; //ชื่อไฟล์
             try
             {
