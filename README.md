@@ -20,6 +20,10 @@
    **[VS2022](https://visualstudio.microsoft.com/vs/)**  
 4. ดาวน์โหลดและแตกไฟล์ หรือจะโคลนก็ได้:
    ```bash
+   git clone https://github.com/punyjin/Simple-notify-Line.git
+   
+3. ตั้งค่าที่อยู่ของไฟล์:
+   ```bash
    string url = "http://127.0.0.1/update/update.zip"; //ที่อยู่ของไฟล์
 5. ตั้งค่าอื่นๆ เช่น เปิดโปรแกรมใหม่ที่กำหนด :
    ```bash
