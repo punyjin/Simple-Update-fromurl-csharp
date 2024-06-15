@@ -21,12 +21,23 @@ namespace WindowsFormsApp1
     {
         private DateTime lastUpdateTime; //ตัวแปร เวลา
         public string extractPath = LC_Update.Properties.Settings.Default.Path_Location; // เพิ่มตัวแปรสำหรับเก็บเส้นทางที่เลือก
+        private Timer updateTimer;
+        private WebClient downloadClient;
+        private int downloadProgress;
+        private long totalBytes;
+        private long bytesReceived;
+
         public Form1()
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.None;
             // เพิ่ม MouseDown event handler ให้กับ Form
             this.MouseDown += new MouseEventHandler(Form1_MouseDown);
+
+            // Initialize Timer
+            updateTimer = new Timer();
+            updateTimer.Interval = 1500; // 1.5 seconds
+            updateTimer.Tick += UpdateTimer_Tick;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -62,7 +73,7 @@ namespace WindowsFormsApp1
                     }
                     else
                     {
-                        MessageBox.Show("กรุณาเลือกที่อยู่ติดตั้งก่อน", "LC_Update");
+                        MessageBox.Show("กรุณาเลือกที่อยู่สำหรับติดตั้งก่อน", "LC_Update");
                         Application.Exit();
                     }
                 }
@@ -75,24 +86,38 @@ namespace WindowsFormsApp1
 
         private void DownloadFile(string url, string localPath, Action callback)
         {
-            using (WebClient client = new WebClient())
+            downloadClient = new WebClient();
+            downloadClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(Client_DownloadProgressChanged);
+            downloadClient.DownloadFileCompleted += (sender, e) =>
             {
-                client.DownloadFileCompleted += (sender, e) =>
+                if (e.Error != null)
                 {
-                    if (e.Error != null)
-                    {
-                        MessageBox.Show($"Error 002: {e.Error.Message}");
-                        return;
-                    }
-                    if (e.Cancelled)
-                    {
-                        MessageBox.Show("Error 003: ยกเลิกการดาวน์โหลด !");
-                        return;
-                    }
-                    callback?.Invoke();
-                };
-                client.DownloadFileAsync(new Uri(url), localPath);
-            }
+                    MessageBox.Show($"Error 002: {e.Error.Message}");
+                    return;
+                }
+                if (e.Cancelled)
+                {
+                    MessageBox.Show("Error 003: การดาวน์โหลดถูกยกเลิก : ?");
+                    return;
+                }
+                updateTimer.Stop();
+                callback?.Invoke();
+            };
+            downloadClient.DownloadFileAsync(new Uri(url), localPath);
+            updateTimer.Start();
+        }
+
+        private void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            downloadProgress = e.ProgressPercentage;
+            bytesReceived = e.BytesReceived;
+            totalBytes = e.TotalBytesToReceive;
+        }
+
+        private void UpdateTimer_Tick(object sender, EventArgs e)
+        {
+            progressBar1.Value = downloadProgress;
+            label1.Text = $"Downloaded {bytesReceived / 1024.0 / 1024.0:F2} MB of {totalBytes / 1024.0 / 1024.0:F2} MB ({downloadProgress}%)";
         }
 
         private void CheckVersion()
@@ -100,7 +125,7 @@ namespace WindowsFormsApp1
             string localVersionPath = "version.xml"; //ชื่อไฟล์เวอร์ชัน
             if (!File.Exists(localVersionPath))
             {
-                MessageBox.Show("Error 004: ไม่พบไฟล์เวอร์ชัน");
+                MessageBox.Show("Error 004: ไม่พบไฟล์ version.xml ");
                 return;
             }
 
@@ -122,12 +147,7 @@ namespace WindowsFormsApp1
             }
             else
             {
-                btn_start.Enabled = true;
-                btn_start.Show();
-                progressBar1.Hide();
-                label1.Hide();
-                MessageBox.Show("ไม่มีการอัปเดตใหม่ในเวลานี้ โปรดรอแพทช์ใหม่ <3","xorbit256");
-                Application.Exit();
+                MessageBox.Show("ไม่มีอัพเดทใหม่นะผู้รอดชีวิต โปรดรอติดตามแพทช์ใหม่นะ <3");
             }
         }
 
@@ -141,10 +161,10 @@ namespace WindowsFormsApp1
 
         private void OnDownloadCompleted(string newVersion)
         {
-            string zipPath = "update.zip"; //ชื่อไฟล์ที่อยู่ในระบบฝั่ง Server
+            string zipPath = "update.zip"; //ชื่อไฟล์
             if (string.IsNullOrWhiteSpace(extractPath))
             {
-                MessageBox.Show("Error 007: Path cannot be the empty string or all whitespace.");
+                MessageBox.Show("Error 007: Path ทางต้องไม่เป็น Empty String หรือ Whitespace ทั้งหมด");
                 return;
             }
 
@@ -159,7 +179,7 @@ namespace WindowsFormsApp1
                         string installedVersion = LC_Update.Properties.Settings.Default.InstalledVersion;
                         if (string.Compare(installedVersion, newVersion) >= 0)
                         {
-                            MessageBox.Show("The installed version is up-to-date.");
+                            MessageBox.Show("เวอร์ชันที่ติดตั้งเป็นเวอร์ชันล่าสุด");
                             return;
                         }
                     }
@@ -181,7 +201,7 @@ namespace WindowsFormsApp1
                     btn_start.Show();
                     progressBar1.Hide();
                     label1.Hide();
-                    MessageBox.Show("Download and extraction completed!");
+                    MessageBox.Show("ดาวน์โหลด และ ติดตั้งไฟล์สำเร็จแล้ว!");
                 }
                 catch (FileNotFoundException ex)
                 {
@@ -238,7 +258,7 @@ namespace WindowsFormsApp1
             }
             else if (dialogResult == DialogResult.No)
             {
-                //พื้นที่สำหรับเรียกใช้ ฟังชั่น (เมื่อกด No จะดำเนินการ)
+                //ไม่ทำอะไร
             }
         }
 
