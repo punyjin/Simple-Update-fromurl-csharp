@@ -164,7 +164,7 @@ namespace WindowsFormsApp1
             string zipPath = "update.zip"; //ชื่อไฟล์
             if (string.IsNullOrWhiteSpace(extractPath))
             {
-                MessageBox.Show("Error 007: Path ทางต้องไม่เป็น Empty String หรือ Whitespace ทั้งหมด");
+                MessageBox.Show("Error 007: Path ต้องไม่เป็น Empty String หรือ Whitespace ทั้งหมด");
                 return;
             }
 
