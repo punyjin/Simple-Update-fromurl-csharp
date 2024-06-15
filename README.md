@@ -18,14 +18,15 @@
 1. ติดตั้ง Visual Studio IDE :
    
    **[VS2022](https://visualstudio.microsoft.com/vs/)**  
-4. ดาวน์โหลดและแตกไฟล์ หรือจะโคลนก็ได้:
+2. ดาวน์โหลดและแตกไฟล์ หรือจะโคลนก็ได้:
    ```bash
    git clone https://github.com/punyjin/Simple-notify-Line.git
    
 3. ตั้งค่าที่อยู่ของไฟล์:
    ```bash
-   string url = "http://127.0.0.1/update/update.zip"; //ที่อยู่ของไฟล์
-5. ตั้งค่าอื่นๆ เช่น เปิดโปรแกรมใหม่ที่กำหนด :
+   string url = "http://127.0.0.1/update/update.zip"; //ที่อยู่ของไฟล์ update.zip
+   string versionUrl = "http://127.0.0.1/update/version.xml"; //ที่อยู่ของไฟล์ version.xml
+4. ตั้งค่าอื่นๆ เช่น เปิดโปรแกรมใหม่ที่กำหนด (ถ้าต้องการ):
    ```bash
    Process.Start("Launcher.exe"); //เปิด Process ที่ตั้งไว้
    
