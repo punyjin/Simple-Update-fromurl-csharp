@@ -45,7 +45,7 @@ namespace WindowsFormsApp1
             btn_start.Enabled = false;
             btn_start.Hide();
             Check_Install_Path(); // ตรวจสอบตำแหน่งไฟล์
-            string versionUrl = "http://25.64.193.152/update/version.xml"; //ที่อยู่ของไฟล์เวอร์ชัน
+            string versionUrl = "http://127.0.0.1/update/version.xml"; //ที่อยู่ของไฟล์เวอร์ชัน
             string localVersionPath = "version.xml"; //ชื่อไฟล์เวอร์ชัน
 
             try
@@ -134,7 +134,7 @@ namespace WindowsFormsApp1
 
             if (string.Compare(installedVersion, availableVersion) < 0)
             {
-                string url = "http://25.64.193.152/update/update.zip"; //ที่อยู่ของไฟล์
+                string url = "http://127.0.0.1/update/update.zip"; //ที่อยู่ของไฟล์
                 string localPath = "update.zip"; //ชื่อไฟล์
                 try
                 {
