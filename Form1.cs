@@ -183,14 +183,27 @@ namespace WindowsFormsApp1
                             return;
                         }
                     }
-
-                    // ลบไฟล์ในที่อยู่ปลายทางหากมีอยู่แล้ว
-                    if (Directory.Exists(extractPathToFolder))
-                    {
-                        Directory.Delete(extractPathToFolder, true);
+                    else{
+                    Directory.CreateDirectory(extractPathToFolder);
                     }
-
-                    ZipFile.ExtractToDirectory(zipPath, extractPathToFolder);
+                    //แตกไฟล์ zip ไปยังโฟลเดอร์ปลายทาง
+                    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+                    {
+                        foreach (ZipArchiveEntry entry in archive.Entries)
+                        {
+                            string destinationPath = Path.Combine(extractPathToFolder, entry.FullName);
+                            // ตรวจสอบว่ามีโฟลเดอร์หรือไม่
+                            if (string.IsNullOrEmpty(entry.Name)){
+                                // สร้างโฟลเดอร์ ถ้าไม่มี
+                                Directory.CreateDirectory(destinationPath);
+                                }
+                                else
+                                {
+                                    //ถ้าเป็นไฟล์ที่มีอยู่แล้วจะทับไปเลย
+                                    entry.ExtractToFile(destinationPath, true);
+                                }
+                        }
+                    }
                     File.Delete(zipPath);
 
                     // อัปเดตเวอร์ชันที่ติดตั้งในระบบ
